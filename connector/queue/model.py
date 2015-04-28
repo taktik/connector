@@ -136,7 +136,10 @@ class QueueJob(models.Model):
             # at every job creation
             self._subscribe_users()
             for job in self:
-                msg = job._message_failed_job()
+                exc_info = job.exc_info and job.exc_info.replace("\n", "<br/>") or ""
+                msg =  "<h2>%s: Something bad happened during the execution of the job.</h2><h3>Exception Information:</h3>%s " % (
+                                                    job.name,
+                                                    exc_info)
                 if msg:
                     job.message_post(body=msg,
                                      subtype='connector.mt_job_failed')
